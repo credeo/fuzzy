@@ -5,7 +5,7 @@ authors:
   - Igor Borges <igor@borges.dev>
 
 environment:
-  sdk: '>=2.0.0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 publish_to: none
 
