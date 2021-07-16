@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:fuzzy/fuzzy.dart';
 
-void main() {
-  init();
+void main(List<String> arguments) {
+  init(arguments);
 }
 
-void init() async {
+void init(List<String> arguments) async {
   final String data = File('station_data.json').readAsStringSync();
 
   try {
@@ -24,33 +24,40 @@ void init() async {
       _stationsLocalData,
       options: FuzzyOptions(
         isCaseSensitive: false,
+        matchAllTokens: true,
         shouldSort: true,
         findAllMatches: true,
-        minMatchCharLength: 1,
+        tokenize: true,
+        shouldNormalize: true,
+        minMatchCharLength: 2,
+        minTokenCharLength: 2,
         location: 0,
-        threshold: 0.5,
+        threshold: 0.45,
         distance: 100,
+        // verbose: true,
         keys: [
           WeightedKey<Station>(
-            name: 'longName',
-            getter: (station) => station.longName,
-            weight: 1,
-          ),
-          WeightedKey<Station>(
-            name: 'place',
-            getter: (station) => station.place,
+            name: 'search',
+            getter: (station) => station.search,
             weight: 1,
           ),
         ],
       ),
     );
 
-    final result = fuse.search('planeta');
 
-    print('A score of 0 indicates a perfect match, while a score of 1 indicates a complete mismatch.');
+    var str = '';
+
+    for(final argument in arguments){
+      str = str + argument + " ";
+    }
+
+    str = str.trim();
+
+    final result = fuse.search(str);
 
     result.forEach((r) {
-      print('\nScore: ${r.score}\nstation: ${r.item.longName} ${r.item.place}');
+      print('${r.item.search} | ${r.score}');
     });
   } catch (e) {
     print(e);
@@ -61,9 +68,13 @@ class Station {
   final String? id;
   final String longName;
   final String place;
+  final String name;
+  final String search;
 
   Station.fromJson(Map<String, dynamic> data)
       : id = data['id'] as String,
         longName = (data['longName'] as String?) ?? '',
-        place = (data['place'] as String?) ?? '';
+        name = (data['name'] as String?) ?? '',
+        place = (data['place'] as String?) ?? '',
+        search = (((data['name'] as String?) ?? '') + " " + ((data['place'] as String?) ?? ''));
 }
