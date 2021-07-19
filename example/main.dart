@@ -32,8 +32,8 @@ void init(List<String> arguments) async {
         minMatchCharLength: 2,
         minTokenCharLength: 2,
         location: 0,
-        threshold: 0.45,
-        distance: 100,
+        threshold: 0.5,
+        distance: 80,
         // verbose: true,
         keys: [
           WeightedKey<Station>(
@@ -53,8 +53,11 @@ void init(List<String> arguments) async {
     }
 
     str = str.trim();
+    final normalizedString = splitSortAndUnique(str);
 
-    final result = fuse.search(str);
+    print('|${normalizedString}|');
+
+    final result = fuse.search(normalizedString);
 
     result.forEach((r) {
       print('${r.item.search} | ${r.score}');
@@ -76,5 +79,12 @@ class Station {
         longName = (data['longName'] as String?) ?? '',
         name = (data['name'] as String?) ?? '',
         place = (data['place'] as String?) ?? '',
-        search = (((data['name'] as String?) ?? '') + " " + ((data['place'] as String?) ?? ''));
+        search = splitSortAndUnique(((data['name'] as String?) ?? '') + " " + ((data['place'] as String?) ?? ''));
+}
+
+ String splitSortAndUnique(String string) {
+  var array = string.split(" ");
+  array.sort();
+  final sortAndUnique =  array.toSet().toList();
+  return sortAndUnique.join(" ").toLowerCase();
 }
