@@ -27,7 +27,9 @@ void init(List<String> arguments) async {
       if (s == null) continue;
       final station = Station.fromJsonVRN(s);
       if (station.id != null) {
-        _stationsLocalData.add(station);
+        if (_stationsLocalData.indexWhere((s) => s.id == station.id) == -1) {
+          _stationsLocalData.add(station);
+        }
       }
     }
 
@@ -35,22 +37,32 @@ void init(List<String> arguments) async {
       _stationsLocalData,
       options: FuzzyOptions(
         isCaseSensitive: false,
-        matchAllTokens: true,
+        matchAllTokens: false,
         shouldSort: true,
-        findAllMatches: true,
+        findAllMatches: false,
         tokenize: true,
         shouldNormalize: true,
         minMatchCharLength: 2,
         minTokenCharLength: 2,
         location: 0,
-        threshold: 0.5,
-        distance: 80,
-        // verbose: true,
+        threshold: 0.4,
+        distance: 10,
+        //verbose: false,
         keys: [
           WeightedKey<Station>(
-            name: 'search',
-            getter: (station) => station.search,
+            name: 'name',
+            getter: (station) => station.name,
+            weight: 10,
+          ),
+          WeightedKey<Station>(
+            name: 'longname',
+            getter: (station) => station.longName,
             weight: 1,
+          ),
+          WeightedKey<Station>(
+            name: 'place',
+            getter: (station) => station.place,
+            weight: 10,
           ),
         ],
       ),
@@ -70,7 +82,7 @@ void init(List<String> arguments) async {
 
     final result = fuse.search(normalizedString);
 
-    result.forEach((r) {
+    result.take(10).forEach((r) {
       print('${r.item.search} | ${r.score}');
     });
   } catch (e) {
@@ -86,14 +98,14 @@ class Station {
   final String search;
 
   Station.fromJson(Map<String, dynamic> data)
-      : id = data['id'] as String,
+      : id = data['globalID'] as String,
         longName = (data['longName'] as String?) ?? '',
         name = (data['name'] as String?) ?? '',
         place = (data['place'] as String?) ?? '',
-        search = splitSortAndUnique(((data['name'] as String?) ?? '') + " " + ((data['place'] as String?) ?? ''));
+        search = splitSortAndUnique(((data['name'] as String?) ?? '') + " " + ((data['longName'] as String?) ?? '') + " " + ((data['place'] as String?) ?? ''));
 
   Station.fromJsonVRN(Map<String, dynamic> data)
-      : id = data['point']['station']['id'] as String,
+      : id = data['point']['station']['globalID'] as String,
         longName = (data['point']['station']['name'] as String?) ?? '',
         name = (data['point']['station']['name'] as String?) ?? '',
         place = (data['place'] as String?) ?? '',
