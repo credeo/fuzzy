@@ -9,6 +9,7 @@ void main(List<String> arguments) {
 
 void init(List<String> arguments) async {
   final String data = File('station_data.json').readAsStringSync();
+  final String vrnData = File('vrnstations.json').readAsStringSync();
 
   try {
     Map<String, dynamic> jsonResult = json.decode(data) as Map<String, dynamic>;
@@ -20,6 +21,16 @@ void init(List<String> arguments) async {
         _stationsLocalData.add(station);
       }
     }
+
+    Map<String, dynamic> jsonResultVRN = json.decode(vrnData) as Map<String, dynamic>;
+    for (Map<String, dynamic>? s in jsonResultVRN["vrnStations"]["elements"]) {
+      if (s == null) continue;
+      final station = Station.fromJsonVRN(s);
+      if (station.id != null) {
+        _stationsLocalData.add(station);
+      }
+    }
+
     final fuse = Fuzzy(
       _stationsLocalData,
       options: FuzzyOptions(
@@ -80,6 +91,13 @@ class Station {
         name = (data['name'] as String?) ?? '',
         place = (data['place'] as String?) ?? '',
         search = splitSortAndUnique(((data['name'] as String?) ?? '') + " " + ((data['place'] as String?) ?? ''));
+
+  Station.fromJsonVRN(Map<String, dynamic> data)
+      : id = data['point']['station']['id'] as String,
+        longName = (data['point']['station']['name'] as String?) ?? '',
+        name = (data['point']['station']['name'] as String?) ?? '',
+        place = (data['place'] as String?) ?? '',
+        search = splitSortAndUnique(((data['point']['station']['name'] as String?) ?? '') + " " + ((data['place'] as String?) ?? ''));
 }
 
  String splitSortAndUnique(String string) {
