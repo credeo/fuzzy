@@ -40,3 +40,10 @@ void main() {
 ```
 
 Don't forget to take a look at [FuzzyOptions](https://pub.dev/documentation/fuzzy/latest/data_fuzzy_options/FuzzyOptions-class.html)!
+
+## RUN
+```dart
+
+dart run main.dart arg
+
+```
