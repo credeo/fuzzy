@@ -46,7 +46,7 @@ void init(List<String> arguments) async {
         minTokenCharLength: 2,
         location: 0,
         threshold: 0.4,
-        distance: 10,
+        distance: 80,
         //verbose: false,
         keys: [
           WeightedKey<Station>(
