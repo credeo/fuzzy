@@ -45,24 +45,24 @@ void init(List<String> arguments) async {
         minMatchCharLength: 2,
         minTokenCharLength: 2,
         location: 0,
-        threshold: 0.4,
+        threshold: 0.3,
         distance: 80,
         //verbose: false,
         keys: [
           WeightedKey<Station>(
             name: 'name',
             getter: (station) => station.name,
-            weight: 10,
+            weight: 50,
           ),
           WeightedKey<Station>(
             name: 'longname',
             getter: (station) => station.longName,
-            weight: 1,
+            weight: 10,
           ),
           WeightedKey<Station>(
             name: 'place',
             getter: (station) => station.place,
-            weight: 10,
+            weight: 25,
           ),
         ],
       ),
